@@ -8,9 +8,11 @@ float view_tilt = PI/5;				// angular tilt of our view of the planet + sun syste
 float axis_tilt = PI/4;				// angular deviation of the planet's axis from the normal line
 
 float orbit_speed = PI/2000;		// angular velocity of the planet's rotation about the sun
-float rotate_speed = PI/100;		// angular velocity of the planet's rotation about its axis
+float rotate_speed = PI/20;		// angular velocity of the planet's rotation about its axis
 
-float my_latitude = PI/3; 		// latitude of the observer on the planet
+float my_latitude = PI/2.5; 		// latitude of the observer on the planet
+
+int selected_param = 0;
 
 void setup() {
 
@@ -42,21 +44,15 @@ void draw() {
 	float my_ypos = planetY - sW * planet_rad * (-cos(my_latitude) * cos(my_theta) * sin(view_tilt) + (sin(my_latitude) * cos(axis_tilt) + sin(my_theta) * cos(my_latitude) * sin(axis_tilt)) * cos(view_tilt));
 	float my_zpos = real_planetZ - planet_rad * (cos(my_latitude) * cos(my_theta) * cos(view_tilt) + (sin(my_latitude) * cos(axis_tilt) + sin(my_theta) * cos(my_latitude) * sin(axis_tilt)) * sin(view_tilt));
 	
-	float my_real_xpos = real_planetX + planet_rad * (sin(my_theta) * cos(my_latitude) * cos(axis_tilt) + sin(axis_tilt) * sin(my_latitude));
-	float my_real_ypos = real_planetY + planet_rad * (- sin(axis_tilt) * sin(my_theta) * cos(my_latitude) + cos(axis_tilt) * sin(my_latitude));
+	float my_real_xpos = real_planetX - planet_rad * (sin(my_theta) * cos(my_latitude) * cos(axis_tilt) - sin(axis_tilt) * sin(my_latitude));
+	float my_real_ypos = real_planetY + planet_rad * (-sin(axis_tilt) * sin(my_theta) * cos(my_latitude) + cos(axis_tilt) * sin(my_latitude));
 	float my_real_zpos = real_planetZ + planet_rad * cos(my_theta) * cos(my_latitude);
 
 	float real_solar_dist = sqrt(sq(my_real_xpos) + sq(my_real_ypos) + sq(my_real_zpos));
 	float critical_dist = sqrt(sq(orbit_rad) + sq(planet_rad));
 
+	// dark background
    background(0, 0, 0);
-
-	fill(255, 255, 255)
-	text(my_real_xpos, 3 * sW / 4, 3 * sH / 4);
-	text(my_real_ypos, 3 * sW / 4, 5 * sH / 6);
-	text(my_real_zpos, 3 * sW / 4, 11 * sH / 12);
-	text(real_solar_dist, 7 * sW / 8, 3 * sH / 4);
-	text(critical_dist, 7 * sW / 8, 5 * sH / 6);
 
 	// draw the sun	
 	noStroke();
@@ -104,7 +100,6 @@ void draw() {
 	}
 
 	// check daytime/nighttime
-	// note: the distance function doesn't work properly. probably smth wrong with the my_real_pos floats
 	noStroke();
 	if (real_solar_dist > critical_dist * 1.05) {
 		fill(0, 0, 0);
@@ -123,9 +118,51 @@ void draw() {
 	planet_theta += orbit_speed;
 	my_theta += rotate_speed;
 
+// draw the parameter selection menu
+	fill(255, 255, 255);
+	textSize(20);
+	text("Viewing Angle", 2 * sW / 3, 3 * sH / 4);
+	text("Observer Latitude", 2 * sW / 3, 16 * sH / 20);
+	text("Axial Tilt", 2 * sW / 3, 17 * sH / 20);
+	text("Speed of Revolution", 2 * sW / 3, 18 * sH / 20);
+	text("Speed of Rotation", 2 * sW / 3, 19 * sH / 20);
+	fill(255, 0, 0);
+	ellipse((2 / 3 - 1 / 40) * sW, (3 / 4 - 1 / 160 + selected_param / 20) * sH, 10, 10);
+
+// change the selected parameter using the arrow keys, within given bounds
+	if (keyPressed == true) {
+		if (keyCode == UP) {
+			if (selected_param == 0 && view_tilt < PI/2) {
+				view_tilt += PI/200;
+			} else if (selected_param == 1 && my_latitude < PI/2) {
+				my_latitude += PI/200;
+			} else if (selected_param == 2 && axis_tilt < PI/2) {
+				axis_tilt += PI/200;
+			} else if (selected_param == 3 && orbit_speed < PI/100) {
+				orbit_speed += PI/4000;
+			} else if (selected_param == 4 && rotate_speed < PI/10) {
+				rotate_speed += PI/400;
+			}
+		} else if (keyCode == DOWN) {
+			if (selected_param == 0 && view_tilt > 0) {
+				view_tilt += -PI/200;
+			} else if (selected_param == 1 && my_latitude > 0) {
+				my_latitude += -PI/200;
+			} else if (selected_param == 2 && axis_tilt > 0) {
+				axis_tilt += -PI/200;
+			} else if (selected_param == 3 && orbit_speed > -PI/100) {
+				orbit_speed += -PI/4000;
+			} else if (selected_param == 4 && rotate_speed > -PI/10) {
+				rotate_speed += -PI/400;
+			}
+		}
+	}
+
 }
 
-// TO DO:
-// - make an "axial tilt" parameter
-// - make an observer point shown on the planet's surface, which moves with the planet's axial rotation
-// - make an "observer's eye view" of sunrises/sunsets
+// toggle between different parameters
+void keyPressed() {
+	if (key == 't') {
+		selected_param = (selected_param + 1) % 5;
+	}
+}
