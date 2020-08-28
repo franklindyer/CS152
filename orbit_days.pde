@@ -1,3 +1,15 @@
+/*****************************************
+ * Assignment 2
+ * Name:    Franklin Pezzuti Dyer
+ * E-mail:  fpezzutidyer@unm.edu
+ * Course:      CS 152 - Section 005
+ * Submitted:    8/29/2020
+ * 
+ * A simulation of day/night cycles on a planet revolving about a star.
+ * Press X to select from among the parameters of the planet's orbit.
+ * Use the UP and DOWN arrow keys to increase or decrease the selected value.
+***********************************************/
+
 float sun_rad = 1/16;				// sun radius
 float planet_rad = 1/24; 			// planet radius
 float orbit_rad = 1/6;				// orbit radius
@@ -5,12 +17,14 @@ float axis_len = 1/20;				// length of protruding axis segments
 												// all lengths above are given as a proportion of the screen width
 
 float view_tilt = PI/5;				// angular tilt of our view of the planet + sun system
-float axis_tilt = PI/4;				// angular deviation of the planet's axis from the normal line
+float axis_tilt = PI/8;				// angular deviation of the planet's axis from the normal line
 
-float orbit_speed = PI/2000;		// angular velocity of the planet's rotation about the sun
-float rotate_speed = PI/20;		// angular velocity of the planet's rotation about its axis
+float orbit_speed = PI/8000;		// angular velocity of the planet's rotation about the sun
+float rotate_speed = PI/200;		// angular velocity of the planet's rotation about its axis
 
-float my_latitude = PI/2.5; 		// latitude of the observer on the planet
+float my_latitude = PI/6; 		// latitude of the observer on the planet
+
+float vision_angle = PI/2;		// the highest angle of inclination that the observer can see
 
 int selected_param = 0;
 
@@ -48,11 +62,22 @@ void draw() {
 	float my_real_ypos = real_planetY + planet_rad * (-sin(axis_tilt) * sin(my_theta) * cos(my_latitude) + cos(axis_tilt) * sin(my_latitude));
 	float my_real_zpos = real_planetZ + planet_rad * cos(my_theta) * cos(my_latitude);
 
+	float unit_xvel = - cos(my_theta) * cos(my_latitude) * cos(axis_tilt);
+	float unit_yvel = cos(my_theta) * cos(my_latitude) * sin(axis_tilt);
+	float unit_zvel = - sin(my_theta) * cos(my_latitude);
+
+	float solar_normal_deviation = acos(-((my_real_xpos - real_planetX) * real_planetX + (my_real_ypos - real_planetY) * real_planetY + (my_real_zpos - real_planetZ) * real_planetZ) / (sqrt(sq(my_real_xpos - real_planetX) + sq(my_real_ypos - real_planetY) + sq(my_real_zpos - real_planetZ)) * sqrt(sq(real_planetX) + sq(real_planetY) + sq(real_planetZ))));
+
 	float real_solar_dist = sqrt(sq(my_real_xpos) + sq(my_real_ypos) + sq(my_real_zpos));
 	float critical_dist = sqrt(sq(orbit_rad) + sq(planet_rad));
 
 	// dark background
    background(0, 0, 0);
+
+	// write my name
+	fill(255, 255, 255);
+	textSize(15);
+	text("Franklin Pezzuti Dyer", sW / 100, 79 * sH / 80);
 
 	// draw the sun	
 	noStroke();
@@ -78,6 +103,8 @@ void draw() {
 	// draw the observer at a point on the planet's surface
 	if (my_zpos <= real_planetZ) {
 		fill(255, 255, 255);
+		stroke(0, 0, 0);
+		strokeWeight(1);
 		quad(my_xpos, my_ypos + 5,
 				my_xpos + 5, my_ypos,
 				my_xpos, my_ypos - 5,
@@ -99,7 +126,7 @@ void draw() {
 		ellipse(sW / 4, sH / 2, 2 * sW * sun_rad, 2 * sW * sun_rad);
 	}
 
-	// check daytime/nighttime
+	// check daytime/nighttime and color the sky accordingly, including sunrise/sunset colors
 	noStroke();
 	if (real_solar_dist > critical_dist * 1.05) {
 		fill(0, 0, 0);
@@ -114,12 +141,20 @@ void draw() {
 	}
 	rect(sW / 2, 0, sW / 2, 2 * sH / 3);
 
-// move the planet incrementally farther along in its orbit
-	planet_theta += orbit_speed;
-	my_theta += rotate_speed;
+// draw the sun in the sky
+	if (solar_normal_deviation < PI/2 + PI/10 && solar_normal_deviation > PI/2 - vision_angle - PI/10) {
+		fill(255, 255, 255);
+		ellipse(3 * sW / 4, 
+					2 * sH * (1 - cos(solar_normal_deviation) / sin(vision_angle)) / 3,
+					100, 100);
+	}
 
 // draw the parameter selection menu
+	fill(0, 0, 0);
+	rect(sW / 2, 2 * sH / 3, sW / 2, sH / 3);
 	fill(255, 255, 255);
+	textSize(15);
+	text("Press X to toggle and use arrow keys to adjust parameters.", sW / 2, 33 * sH / 48);
 	textSize(20);
 	text("Viewing Angle", 2 * sW / 3, 3 * sH / 4);
 	text("Observer Latitude", 2 * sW / 3, 16 * sH / 20);
@@ -127,6 +162,8 @@ void draw() {
 	text("Speed of Revolution", 2 * sW / 3, 18 * sH / 20);
 	text("Speed of Rotation", 2 * sW / 3, 19 * sH / 20);
 	fill(255, 0, 0);
+	stroke(255, 100, 100);
+	strokeWeight(3)
 	ellipse((2 / 3 - 1 / 40) * sW, (3 / 4 - 1 / 160 + selected_param / 20) * sH, 10, 10);
 
 // change the selected parameter using the arrow keys, within given bounds
@@ -138,8 +175,8 @@ void draw() {
 				my_latitude += PI/200;
 			} else if (selected_param == 2 && axis_tilt < PI/2) {
 				axis_tilt += PI/200;
-			} else if (selected_param == 3 && orbit_speed < PI/100) {
-				orbit_speed += PI/4000;
+			} else if (selected_param == 3 && orbit_speed < PI/200) {
+				orbit_speed += PI/20000;
 			} else if (selected_param == 4 && rotate_speed < PI/10) {
 				rotate_speed += PI/400;
 			}
@@ -150,19 +187,24 @@ void draw() {
 				my_latitude += -PI/200;
 			} else if (selected_param == 2 && axis_tilt > 0) {
 				axis_tilt += -PI/200;
-			} else if (selected_param == 3 && orbit_speed > -PI/100) {
-				orbit_speed += -PI/4000;
+			} else if (selected_param == 3 && orbit_speed > -PI/200) {
+				orbit_speed += -PI/20000;
 			} else if (selected_param == 4 && rotate_speed > -PI/10) {
 				rotate_speed += -PI/400;
 			}
 		}
 	}
 
+// move the planet incrementally farther along in its orbit
+	planet_theta += orbit_speed;
+	my_theta += rotate_speed;
+
+
 }
 
 // toggle between different parameters
 void keyPressed() {
-	if (key == 't') {
+	if (key == 'x') {
 		selected_param = (selected_param + 1) % 5;
 	}
 }
