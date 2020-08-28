@@ -19,19 +19,21 @@ float axis_len = 1/20;				// length of protruding axis segments
 float view_tilt = PI/5;				// angular tilt of our view of the planet + sun system
 float axis_tilt = PI/8;				// angular deviation of the planet's axis from the normal line
 
-float orbit_speed = PI/8000;		// angular velocity of the planet's rotation about the sun
-float rotate_speed = PI/200;		// angular velocity of the planet's rotation about its axis
+float orbit_speed = PI/1000;		// angular velocity of the planet's rotation about the sun
+float rotate_speed = PI/50;		// angular velocity of the planet's rotation about its axis
 
 float my_latitude = PI/6; 		// latitude of the observer on the planet
 
 float vision_angle = PI/2;		// the highest angle of inclination that the observer can see
 
-int selected_param = 0;
+// aliases to avoid typing out long variable names
+float sW = screenWidth;
+float sH = screenHeight;
 
 void setup() {
 
 	size(screenWidth, screenHeight);
-	frameRate(50);
+	frameRate(60);
 
 	// set the starting position of the planet relative to the sun
 	planet_theta = 0.0;
@@ -40,11 +42,6 @@ void setup() {
 }
 
 void draw() {
-	frameRate(60);
-
-	// aliases to avoid typing out long variable names
-	float sW = screenWidth;
-	float sH = screenHeight;
 	
 	// lots of trig calculations!
 	float planetX = sW / 4 + sW * orbit_rad * sin(planet_theta);
@@ -149,62 +146,57 @@ void draw() {
 					100, 100);
 	}
 
-// draw the parameter selection menu
+// draw the parameter selection menu, including sliders
 	fill(0, 0, 0);
 	rect(sW / 2, 2 * sH / 3, sW / 2, sH / 3);
 	fill(255, 255, 255);
+	stroke(255, 255, 255);
+	strokeWeight(3);
 	textSize(15);
-	text("Press X to toggle and use arrow keys to adjust parameters.", sW / 2, 33 * sH / 48);
+	text("Use sliders to adjust parameters.", sW / 2, 33 * sH / 48);
 	textSize(20);
-	text("Viewing Angle", 2 * sW / 3, 3 * sH / 4);
-	text("Observer Latitude", 2 * sW / 3, 16 * sH / 20);
-	text("Axial Tilt", 2 * sW / 3, 17 * sH / 20);
-	text("Speed of Revolution", 2 * sW / 3, 18 * sH / 20);
-	text("Speed of Rotation", 2 * sW / 3, 19 * sH / 20);
-	fill(255, 0, 0);
-	stroke(255, 100, 100);
-	strokeWeight(3)
-	ellipse((2 / 3 - 1 / 40) * sW, (3 / 4 - 1 / 160 + selected_param / 20) * sH, 10, 10);
 
-// change the selected parameter using the arrow keys, within given bounds
-	if (keyPressed == true) {
-		if (keyCode == UP) {
-			if (selected_param == 0 && view_tilt < PI/2) {
-				view_tilt += PI/200;
-			} else if (selected_param == 1 && my_latitude < PI/2) {
-				my_latitude += PI/200;
-			} else if (selected_param == 2 && axis_tilt < PI/2) {
-				axis_tilt += PI/200;
-			} else if (selected_param == 3 && orbit_speed < PI/200) {
-				orbit_speed += PI/20000;
-			} else if (selected_param == 4 && rotate_speed < PI/10) {
-				rotate_speed += PI/400;
-			}
-		} else if (keyCode == DOWN) {
-			if (selected_param == 0 && view_tilt > 0) {
-				view_tilt += -PI/200;
-			} else if (selected_param == 1 && my_latitude > 0) {
-				my_latitude += -PI/200;
-			} else if (selected_param == 2 && axis_tilt > 0) {
-				axis_tilt += -PI/200;
-			} else if (selected_param == 3 && orbit_speed > -PI/200) {
-				orbit_speed += -PI/20000;
-			} else if (selected_param == 4 && rotate_speed > -PI/10) {
-				rotate_speed += -PI/400;
-			}
-		}
-	}
+	text("Viewing Angle", 11 * sW / 20, 3 * sH / 4);
+	line(3 * sW / 4, 3 * sH / 4 - sH / 100, 19 * sW / 20, 3 * sH / 4 - sH / 100);
+	ellipse(3 * sW / 4 + (sW / 5) * view_tilt / (PI / 2), 3 * sH / 4 - sH / 100, 10, 10);
+
+	text("Observer Latitude", 11 * sW / 20, 16 * sH / 20);
+	line(3 * sW / 4, 16 * sH / 20 - sH / 100, 19 * sW / 20, 16 * sH / 20 - sH / 100);
+	ellipse(3 * sW / 4 + (sW / 5) * my_latitude / (PI / 2), 16 * sH / 20 - sH / 100, 10, 10);
+
+	text("Axial Tilt", 11 * sW / 20, 17 * sH / 20);
+	line(3 * sW / 4, 17 * sH / 20 - sH / 100, 19 * sW / 20, 17 * sH / 20 - sH / 100);
+	ellipse(3 * sW / 4 + (sW / 5) * axis_tilt / (PI / 2), 17 * sH / 20 - sH / 100, 10, 10);
+
+	text("Speed of Revolution", 11 * sW / 20, 18 * sH / 20);
+	line(3 * sW / 4, 18 * sH / 20 - sH / 100, 19 * sW / 20, 18 * sH / 20 - sH / 100);
+	ellipse(17 * sW / 20 + (sW / 10) * orbit_speed / (PI / 200), 18 * sH / 20 - sH / 100, 10, 10);
+
+	text("Speed of Rotation", 11 * sW / 20, 19 * sH / 20);
+	line(3 * sW / 4, 19 * sH / 20 - sH / 100, 19 * sW / 20, 19 * sH / 20 - sH / 100);
+	ellipse(17 * sW / 20 + (sW / 10) * rotate_speed / (PI / 50), 19 * sH / 20 - sH / 100, 10, 10);
 
 // move the planet incrementally farther along in its orbit
 	planet_theta += orbit_speed;
 	my_theta += rotate_speed;
 
+// click to change the positions of sliders
+	if (mousePressed == true) {
 
-}
-
-// toggle between different parameters
-void keyPressed() {
-	if (key == 'x') {
-		selected_param = (selected_param + 1) % 5;
+		if (mouseX >= 3 * sW / 4 && mouseX <= 19 * sW / 20 && mouseY > 14 * sH / 20) {
+			if (mouseY < 3 * sH / 4) {
+				view_tilt = (PI / 2) * (mouseX - 3 * sW / 4) / (sW / 5);
+			} else if (mouseY < 16 * sH / 20) {
+				my_latitude = (PI / 2) * (mouseX - 3 * sW / 4) / (sW / 5);
+			} else if (mouseY < 17 * sH / 20) {
+				axis_tilt = (PI / 2) * (mouseX - 3 * sW / 4) / (sW / 5);
+			} else if (mouseY < 18 * sH / 20) {
+				orbit_speed = (PI / 200) * (mouseX - 17 * sW / 20) / (sW / 10);
+			} else if (mouseY < 19 * sH / 20) {
+				rotate_speed = (PI / 50) * (mouseX - 17 * sW / 20) / (sW / 10);
+			}
+		}
+	
 	}
+
 }
