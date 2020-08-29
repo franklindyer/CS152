@@ -56,7 +56,7 @@ void draw() {
 	float my_zpos = real_planetZ - planet_rad * (cos(my_latitude) * cos(my_theta) * cos(view_tilt) + (sin(my_latitude) * cos(axis_tilt) + sin(my_theta) * cos(my_latitude) * sin(axis_tilt)) * sin(view_tilt));
 	
 	float my_real_xpos = real_planetX - planet_rad * (sin(my_theta) * cos(my_latitude) * cos(axis_tilt) - sin(axis_tilt) * sin(my_latitude));
-	float my_real_ypos = real_planetY + planet_rad * (-sin(axis_tilt) * sin(my_theta) * cos(my_latitude) + cos(axis_tilt) * sin(my_latitude));
+	float my_real_ypos = real_planetY + planet_rad * (sin(axis_tilt) * sin(my_theta) * cos(my_latitude) + cos(axis_tilt) * sin(my_latitude));
 	float my_real_zpos = real_planetZ + planet_rad * cos(my_theta) * cos(my_latitude);
 
 	float unit_xvel = - cos(my_theta) * cos(my_latitude) * cos(axis_tilt);
@@ -70,6 +70,15 @@ void draw() {
 
 	// dark background
    background(0, 0, 0);
+
+	// for debugging purposes
+	fill(255, 255, 255);
+	text(real_planetX, sW / 6, sH / 40);
+	text(real_planetY, sW / 6, 2*sH / 40);
+	text(real_planetZ, sW / 6, 3*sH / 40);
+	text(my_real_xpos, sW / 6, 4*sH / 40);
+	text(my_real_ypos, sW / 6, 5*sH / 40);
+	text(my_real_zpos, sW / 6, 6*sH / 40);
 
 	// write my name
 	fill(255, 255, 255);
