@@ -6,8 +6,7 @@
  * Submitted:    8/29/2020
  * 
  * A simulation of day/night cycles on a planet revolving about a star.
- * Press X to select from among the parameters of the planet's orbit.
- * Use the UP and DOWN arrow keys to increase or decrease the selected value.
+ * Use sliders to change the parameters of the planet's orbit.
 ***********************************************/
 
 float sun_rad = 1/16;				// sun radius
