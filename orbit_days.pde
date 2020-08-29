@@ -72,13 +72,13 @@ void draw() {
    background(0, 0, 0);
 
 	// for debugging purposes
-	fill(255, 255, 255);
-	text(real_planetX, sW / 6, sH / 40);
-	text(real_planetY, sW / 6, 2*sH / 40);
-	text(real_planetZ, sW / 6, 3*sH / 40);
-	text(my_real_xpos, sW / 6, 4*sH / 40);
-	text(my_real_ypos, sW / 6, 5*sH / 40);
-	text(my_real_zpos, sW / 6, 6*sH / 40);
+	//fill(255, 255, 255);
+	//text(real_planetX, sW / 6, sH / 40);
+	//text(real_planetY, sW / 6, 2*sH / 40);
+	//text(real_planetZ, sW / 6, 3*sH / 40);
+	//text(my_real_xpos, sW / 6, 4*sH / 40);
+	//text(my_real_ypos, sW / 6, 5*sH / 40);
+	//text(my_real_zpos, sW / 6, 6*sH / 40);
 
 	// write my name
 	fill(255, 255, 255);
