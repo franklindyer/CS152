@@ -82,7 +82,7 @@ void draw() {
 
 	// write my name
 	fill(255, 255, 255);
-	textSize(15);
+	textSize(sW / 80);
 	text("Franklin Pezzuti Dyer", sW / 100, 79 * sH / 80);
 
 	// draw the sun	
@@ -152,7 +152,7 @@ void draw() {
 		fill(255, 255, 255);
 		ellipse(3 * sW / 4, 
 					2 * sH * (1 - cos(solar_normal_deviation) / sin(vision_angle)) / 3,
-					100, 100);
+					sW / 10, sW / 10);
 	}
 
 // draw the parameter selection menu, including sliders
@@ -161,9 +161,9 @@ void draw() {
 	fill(255, 255, 255);
 	stroke(255, 255, 255);
 	strokeWeight(3);
-	textSize(15);
+	textSize(sW / 80);
 	text("Use sliders to adjust parameters.", sW / 2, 33 * sH / 48);
-	textSize(20);
+	textSize(sW / 50);
 
 	text("Viewing Angle", 11 * sW / 20, 3 * sH / 4);
 	line(3 * sW / 4, 3 * sH / 4 - sH / 100, 19 * sW / 20, 3 * sH / 4 - sH / 100);
