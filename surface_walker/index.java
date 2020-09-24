@@ -15,6 +15,7 @@
  * 4 - Mobius Strip (top/bottom edges are boundaries, left/right edges wrap around with inversion)
  * 5 - Projective Plane (both pairs of edges wrap around, but the left/right edges include an inversion)
  * 6 - Klein Bottle (both pairs of edges wrap around with inversion)
+ * Extra credit #2 asks for the player to "wrap around" the edges of the screen, which corresponds to the Torus (3).
 ***********************************************/
 
 Vehicle vehicle;
