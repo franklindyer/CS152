@@ -16,6 +16,7 @@
  * 5 - Projective Plane (both pairs of edges wrap around, but the left/right edges include an inversion)
  * 6 - Klein Bottle (both pairs of edges wrap around with inversion)
  * Extra credit #2 asks for the player to "wrap around" the edges of the screen, which corresponds to the Torus (3).
+ * But if you want to be utterly confused, press (6) and try walking across the edges of the screen!
 ***********************************************/
 
 Vehicle vehicle;
