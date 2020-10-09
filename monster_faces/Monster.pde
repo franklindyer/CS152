@@ -2,6 +2,7 @@ class Monster {
   float xPosition, yPosition;
   float size;
   color monsterColor;
+  float roundness;
   Eyes eyes;
   Mouth mouth;
   Name name;
@@ -14,6 +15,9 @@ class Monster {
     xPosition = width / 2 + grid_unit * (2 * column - COLUMNS + 1) / 2;
     yPosition = height / 2 + grid_unit * (2 * row - ROWS + 1) / 2;
     size = grid_unit * 4 / 5;
+    
+// randomize face roundness
+    roundness = (size / 2) * (1 - random(1)**3);
  
  // generate facial features
     eyes = new Eyes(size, xPosition, yPosition, special);
@@ -24,7 +28,8 @@ class Monster {
 // draw the face, plus each of its parts  
   void drawMe() {
     fill(monsterColor);
-    ellipse(xPosition, yPosition, size, size);
+//    ellipse(xPosition, yPosition, size, size);
+    rect(xPosition - size / 2, yPosition - size / 2, size, size, roundness);
     eyes.drawMe();
     mouth.drawMe();
     name.drawMe();
@@ -33,6 +38,7 @@ class Monster {
 // update the face dynamically, and each of its parts
   void updateMe() {
     eyes.updateMe();
+    mouth.updateMe(size, xPosition, yPosition);
   }
 }
 
@@ -138,38 +144,66 @@ class Mouth {
   float anchor2X, anchor2Y;
   float control1X, control1Y;
   float control2X, control2Y;
+  float[] bezierMouth = new float[8];
+  float[] newBezierMouth = new float[8];
+  float transition = 0;
+  float changeProb = 0.05;
+  float changeSpeed = 1/20;
   boolean special;
 
 // randomize anchor and control points for bezier curve mouth  
   Mouth(float monsterSize, float monsterX, float monsterY, boolean isSpecial) {
-    anchor1X = monsterX - monsterSize / 3 + random(monsterSize / 4);
-    anchor2X = monsterX + monsterSize / 3 - random(monsterSize / 4);
-    control1X = monsterX - monsterSize / 3 + random(monsterSize / 4);
-    control2X = monsterX + monsterSize / 3 - random(monsterSize / 4)
-    anchor1Y = monsterY + monsterSize / 3 - random(monsterSize / 6);
-    anchor2Y = monsterY + monsterSize / 3 - random(monsterSize / 6);
-    control1Y = monsterY + monsterSize / 3 - random(monsterSize / 6);
-    control2Y = monsterY + monsterSize / 3 - random(monsterSize / 6);
+    
+    bezierMouth = randomBezier(monsterSize, monsterX, monsterY);
+    changeProb = max(0, 0.1 * (random(1) - 0.5));
+    changeSpeed = random(1)**2 / 20;
     
     special = isSpecial;
     
     // they say a true sage is never unhappy...
     if (special) {
-      anchor1X = monsterX - monsterSize / 3;
-      control2X = monsterX + monsterSize / 3;
-      control1X = monsterX - monsterSize / 4;
-      anchor2X = monsterX + monsterSize / 5;
-      anchor1Y = monsterY + monsterSize / 5;
-      control2Y = monsterY + monsterSize / 5;
-      control1Y = monsterY + monsterSize / 3;
-      anchor2Y = monsterY + monsterSize / 3;
+      bezierMouth[0] = monsterX - monsterSize / 3;
+      bezierMouth[6] = monsterX + monsterSize / 3;
+      bezierMouth[2] = monsterX - monsterSize / 4;
+      bezierMouth[4] = monsterX + monsterSize / 5;
+      bezierMouth[1] = monsterY + monsterSize / 5;
+      bezierMouth[7] = monsterY + monsterSize / 5;
+      bezierMouth[3] = monsterY + monsterSize / 3;
+      bezierMouth[5] = monsterY + monsterSize / 3;
     }
+  
+    
+  }
+  
+  float[8] randomBezier(float monsterSize, float monsterX, float monsterY) {
+      float[8] newBezier = new float[8];
+      newBezier[0] = monsterX - monsterSize / 3 + random(monsterSize / 4);
+      newBezier[4] = monsterX + monsterSize / 3 - random(monsterSize / 4);
+      newBezier[2] = monsterX - monsterSize / 3 + random(monsterSize / 4);
+      newBezier[6] = monsterX + monsterSize / 3 - random(monsterSize / 4)
+      newBezier[1] = monsterY + monsterSize / 3 - random(monsterSize / 6);
+      newBezier[5] = monsterY + monsterSize / 3 - random(monsterSize / 6);
+      newBezier[3] = monsterY + monsterSize / 3 - random(monsterSize / 6);
+      newBezier[7] = monsterY + monsterSize / 3 - random(monsterSize / 6);
+      return newBezier;
   }
   
 // draw mouth
   void drawMe() {
     noFill();
-    bezier(anchor1X, anchor1Y, control1X, control1Y, anchor2X, anchor2Y, control2X, control2Y);
+    bezier(bezierMouth[0], bezierMouth[1], bezierMouth[2], bezierMouth[3], bezierMouth[4], bezierMouth[5], bezierMouth[6], bezierMouth[7]);
+  }
+  
+  void updateMe(float monsterSize, float monsterX, float monsterY) {
+    if (transition <= 0 && random(1) < changeProb && special == 0) {
+      transition = 1;
+      newBezierMouth = randomBezier(monsterSize, monsterX, monsterY);
+    } else if (transition > 0) {
+      transition += - 1/20;
+      for (int i = 0; i < 8; i++) {
+        bezierMouth[i] = transition * bezierMouth[i] + (1 - transition) * newBezierMouth[i];
+      }
+    }
   }
 }
 
