@@ -27,7 +27,7 @@ void setup() {
 	for (int i = 0; i < ROWS; i++) {
 	  for (int j = 0; j < COLUMNS; j++) {
 	    // they say a true sage is one-in-a-thousand...
-	    boolean special = (random(1) < 0.001)
+	    boolean special = (random(1) < 0.001);
       monsters[i][j] = new Monster(i, j, special);
     }
 	}
