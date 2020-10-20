@@ -3,7 +3,7 @@
  * Name: Franklin Pezzuti Dyer
  * E-mail: fpezzutidyer@unm.edu
  * Course:  CS 152 - Section 005
- * Date submitted:    
+ * Date submitted: 10/20/2020  
  *
  * A program that plays a word guessing game
 ***********************************************/
